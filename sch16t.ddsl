@@ -1,0 +1,795 @@
+device LowLevel {
+    byte-order: LE,
+    register-address-type: u8,
+
+    /// Sensor status reported on every frame
+    ///
+    /// Any value other than normal will return an error from get_raw_sample
+    enum SensorStatus {
+        Normal: _,
+        SensorError: _,
+        Saturation: _,
+        Initialization: _,
+    },
+
+    fieldset FrameOut {
+        size-bytes: 6,
+        byte-order: BE,
+
+        field chip_address 47:46,
+        field register_address 45:38,
+        field write_en 37 -> bool,
+        field frame_type 35 -> bool,
+        field data 27:8,
+        field crc 7:0,
+    },
+
+    fieldset FrameIn {
+        size-bytes: 6,
+        byte-order: BE,
+
+        field data_type 47,
+        field chip_address 46:45,
+        field register_address 44:37,
+        field internal_data_status 36 -> bool,
+        field command_error 35 -> bool,
+        field sensor_status 34:33 -> u8 as SensorStatus,
+        field data_count 32:29,
+        field data 27:8,
+        field crc 7:0,
+    },
+
+    register RateX1 {
+        address: 0x01,
+        access: RO,
+        reset: 0,
+
+        fields: fieldset Data20 {
+            size-bytes: 3,
+
+            field data 19:0 -> i32,
+        }
+    },
+
+    register RateY1 {
+        address: 0x02,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register RateZ1 {
+        address: 0x03,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccX1 {
+        address: 0x04,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccY1 {
+        address: 0x05,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccZ1 {
+        address: 0x06,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccX3 {
+        address: 0x07,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccY3 {
+        address: 0x08,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccZ3 {
+        address: 0x09,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register RateX2 {
+        address: 0x0A,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register RateY2 {
+        address: 0x0B,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register RateZ2 {
+        address: 0x0C,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccX2 {
+        address: 0x0D,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccY2 {
+        address: 0x0E,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register AccZ2 {
+        address: 0x0F,
+        access: RO,
+        reset: 0,
+
+        fields: Data20
+    },
+
+    register Temp {
+        address: 0x10,
+        access: RO,
+        reset: 0,
+
+        fields: fieldset DataTemp {
+            size-bytes: 3,
+
+            field data 19:4 -> i16,
+        }
+    },
+
+    register RateDcnt {
+        address: 0x11,
+        access: RO,
+        reset: 0,
+
+        fields: fieldset DcntFields {
+            size-bytes: 2,
+
+            field x_dcnt 3:0 -> u8,
+            field y_dcnt 7:4 -> u8,
+            field z_dcnt 11:8 -> u8,
+        }
+    },
+
+    register AccDcnt {
+        address: 0x12,
+        access: RO,
+        reset: 0,
+
+        fields: DcntFields
+    },
+
+    register FreqDcnt {
+        address: 0x13,
+        access: RO,
+        reset: 0,
+
+        fields: fieldset Counter16 {
+            size-bytes: 2,
+
+            field data 13:0 -> u16,
+        }
+    },
+
+    register StatSum {
+        address: 0x14,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// High level status bits
+            ///
+            /// See DS section 7.3.3
+            fieldset StatSumFields {
+                size-bytes: 2,
+
+                field cmn 7 -> bool,
+                field rate_x 6 -> bool,
+                field rate_y 5 -> bool,
+                field rate_z 4 -> bool,
+                field acc_x 3 -> bool,
+                field acc_y 2 -> bool,
+                field acc_z 1 -> bool,
+                field init_rdy 0 -> bool,
+            }
+    },
+
+    register StatSumSat {
+        address: 0x15,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Saturation high level bits
+            ///
+            /// See DS section 7.3.4 
+            fieldset StatSumSatFields {
+                size-bytes: 2,
+
+                field rate_x1 14 -> bool,
+                field rate_y1 13 -> bool,
+                field rate_z1 12 -> bool,
+                field acc_x1 11 -> bool,
+                field acc_y1 10 -> bool,
+                field acc_z1 9 -> bool,
+                field acc_x3 8 -> bool,
+                field acc_y3 7 -> bool,
+                field acc_z3 6 -> bool,
+                field rate_x2 5 -> bool,
+                field rate_y2 4 -> bool,
+                field rate_z2 3 -> bool,
+                field acc_x2 2 -> bool,
+                field acc_y2 1 -> bool,
+                field acc_z2 0 -> bool,
+            }
+    },
+
+    register StatCom {
+        address: 0x16,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// High level internal status bits
+            ///
+            /// See DS section 7.3.5
+            fieldset StatComFields {
+                size-bytes: 2,
+
+                field mclk_ok 10 -> bool,
+                field dual_clock_ok 9 -> bool,
+                field dsp_ok 8 -> bool,
+                field svm_ok 7 -> bool,
+                field hv_cp_ok 6 -> bool,
+                field supply_ok 5 -> bool,
+                field temp_ok 4 -> bool,
+                field nmode_ok 3 -> bool,
+                field nvm_sts_ok 2 -> bool,
+                field cmn_sts_ok 1 -> bool,
+                field cmn_sts_rdy 0 -> bool, 
+            }
+    },
+
+    register StatRateCom {
+        address: 0x17,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Gyroscope high level status bits
+            ///
+            /// See DS section 7.3.6
+            fieldset StatRateComFields {
+                size-bytes: 2,
+
+                field pri_agc_ok 7  -> bool,
+                field gyro_pri_ok 6  -> bool,
+                field pri_start_ok 5  -> bool,
+                field gyro_hv_ok 4  -> bool,
+                field gyro_sd_sts_ok 2  -> bool,
+                field gyro_bond_sts_ok 1  -> bool,
+                field gyro_sts_rdy_ok 0  -> bool,
+            }
+    },
+
+    register StatRateX {
+        address: 0x18,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Gyroscope axis status bits
+            ///
+            /// See DS section 7.3.7
+            fieldset StatRateFields {
+                size-bytes: 2,
+
+                field dec_sat_ok 9 -> bool,
+                field intp_sat_ok 8 -> bool,
+                field stc_dig_ok 6 -> bool,
+                field stc_ana_ok 5 -> bool,
+                field qc_ok 4 -> bool,
+            }
+    },
+
+    register StatRateY {
+        address: 0x19,
+        access: RO,
+        reset: 0,
+
+        fields: StatRateFields
+    },
+
+    register StatRateZ {
+        address: 0x1A,
+        access: RO,
+        reset: 0,
+
+        fields: StatRateFields
+    },
+
+    register StatAccX {
+        address: 0x1B,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Accelerometer axis status bits
+            ///
+            /// See DS section 7.3.8
+            fieldset StatAccFields {
+                size-bytes: 2,
+
+                field sat_ok 10 -> bool,
+                field dec_sat_ok 9 -> bool,
+                field intp_sat_ok 8 -> bool,
+                field stc_dig_ok 7 -> bool,
+                field stc_tcap_ok 6 -> bool,
+                field stc_sdd_ok 5 -> bool,
+                field stc_n_ok 4 -> bool,
+                field sd_sts_ok 2 -> bool,
+                field sts_ok 1 -> bool,
+                field sts_rdy_ok 0 -> bool,
+            }
+    },
+
+    register StatAccY {
+        address: 0x1C,
+        access: RO,
+        reset: 0,
+
+        fields: StatAccFields
+    },
+
+    register StatAccZ {
+        address: 0x1D,
+        access: RO,
+        reset: 0,
+
+        fields: StatAccFields
+    },
+
+    register StatSyncActive {
+        address: 0x1E,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Status of sync config for each register
+            /// 
+            /// See DS section 7.3.9
+            fieldset StatSyncActiveFields {
+                size-bytes: 2,
+
+                field sync_active_acc_z2 11 -> bool,
+                field sync_active_acc_y2 10 -> bool,
+                field sync_active_acc_x2 9 -> bool,
+                field sync_active_rate_z2 8 -> bool,
+                field sync_active_rate_y2 7 -> bool,
+                field sync_active_rate_x2 6 -> bool,
+                field sync_active_acc_z1 5 -> bool,
+                field sync_active_acc_y1 4 -> bool,
+                field sync_active_acc_x1 3 -> bool,
+                field sync_active_rate_z1 2 -> bool,
+                field sync_active_rate_y1 1 -> bool,
+                field sync_active_rate_x1 0 -> bool,
+            }
+    },
+
+    register StatInfo {
+        address: 0x1F,
+        access: RO,
+        reset: 0,
+
+        fields: 
+            /// Sensor mode bits
+            ///
+            /// See DS section 7.3.9
+            fieldset StatInfoFields {
+                size-bytes: 2,
+
+                field acc_lpm_ok 2 -> bool,
+                field rate_lpm_ok 1 -> bool,
+                field sensor_lpm_ok 0 -> bool,
+            }
+    },
+
+    /// Low pass filter, per axis
+    enum Filter {
+        /// 68 Hz (default)
+        lpf0: default _,
+        /// 30 Hz
+        lpf1: _,
+        /// 13 Hz
+        lpf2: _,
+        /// 280 Hz
+        lpf3: _,
+        /// 370 Hz
+        lpf4: _,
+        /// 235 Hz
+        lpf5: _,
+        /// reserved
+        lpf6: _,
+        /// Bypass
+        lpf7: _,
+    },
+
+    register CtrlFiltRate {
+        address: 0x25,
+        access: RW,
+        reset: 0,
+
+        fields: fieldset FilterFields {
+            size-bytes: 2,
+
+            field x 2:0 -> u8 as Filter,
+            field y 5:3 -> u8 as Filter,
+            field z 8:6 -> u8 as Filter,
+        }
+    },
+
+    register CtrlFiltAcc12 {
+        address: 0x26,
+        access: RW,
+        reset: 0,
+
+        fields: FilterFields
+    },
+
+    register CtrlFiltAcc3 {
+        address: 0x27,
+        access: RW,
+        reset: 0,
+
+        fields: FilterFields
+    },
+
+    /// Dynamic range for gyro in all modes
+    enum RateDynamicRange {
+        /// range: ±300 dynamic range: ±327.68 16bit lsb: 100  20bit lsb: 1600
+        dyn1: default 0b001,
+        /// range: ±300 dynamic range: ±327.68 16bit lsb: 100  20bit lsb: 1600
+        dyn2: 0b010,
+        /// range: ±125 dynamic range: ±163.84 16bit lsb: 200  20bit lsb: 3200
+        dyn3: 0b011,
+        /// range: ±62.5 dynamic range: ±81.92 16bit lsb: 400  20bit lsb: 6400
+        dyn4: 0b100,
+    },
+
+    /// Dynamic range for accelerometer in all modes
+    enum AccDynamicRange {
+        /// range: ±80 dynamic range: ±163.84 16bit lsb: 200  20bit lsb: 3200
+        dyn1: default 0b001,
+        /// range: ±60 dynamic range: ±81.92 16bit lsb: 400  20bit lsb: 6400
+        dyn2: 0b010,
+        /// range: ±30 dynamic range: ±40.96 16bit lsb: 800  20bit lsb: 12800
+        dyn3: 0b011,
+        /// range: ±15 dynamic range: ±20.48 16bit lsb: 1600  20bit lsb: 25600
+        dyn4: 0b100,
+    },
+
+    enum Acc3DynamicRange {
+        /// range: ±80 dynamic range: ±327.86 16bit lsb: 100  20bit lsb: 1600
+        dyn0: default 0b000,
+        /// range: ±80 dynamic range: ±163.84 16bit lsb: 200  20bit lsb: 3200
+        dyn1: 0b001,
+        /// range: ±60 dynamic range: ±81.92 16bit lsb: 400  20bit lsb: 6400
+        dyn2: 0b010,
+        /// range: ±30 dynamic range: ±40.96 16bit lsb: 800  20bit lsb: 12800
+        dyn3: 0b011,
+        /// range: ±15 dynamic range: ±20.48 16bit lsb: 1600  20bit lsb: 25600
+        dyn4: 0b100,
+    },
+
+    /// Per axis decimation ratio
+    enum DecimationRatio {
+        /// No decimation
+        dec1: default 0b000,
+        /// /2
+        dec2: 0b001,
+        /// /4
+        dec3: 0b010,
+        /// /8
+        dec4: 0b011,
+        /// /16
+        dec5: 0b100,
+    },
+
+    register CtrlRate {
+        address: 0x28,
+        access: RW,
+        reset: 0,
+
+        fields: fieldset CrtlRateFields {
+            size-bytes: 2,
+
+            field dyn_xyz1 14:12 -> u8 as RateDynamicRange,
+            field dyn_xyz2 11:9 -> u8 as RateDynamicRange,
+            field dec_z2 8:6 -> u8 as DecimationRatio,
+            field dec_y2 5:3 -> u8 as DecimationRatio,
+            field dec_x2 2:0 -> u8 as DecimationRatio,
+        }
+    },
+
+    register CtrlAcc12 {
+        address: 0x29,
+        access: RW,
+        reset: 0,
+
+        fields: fieldset CrtlAcc12Fields {
+            size-bytes: 2,
+
+            field dyn_xyz1 14:12 -> u8 as AccDynamicRange,
+            field dyn_xyz2 11:9 -> u8 as AccDynamicRange,
+            field dec_z2 8:6 -> u8 as DecimationRatio,
+            field dec_y2 5:3 -> u8 as DecimationRatio,
+            field dec_x2 2:0 -> u8 as DecimationRatio,
+        }
+    },
+
+    register CtrlAcc3 {
+        address: 0x2A,
+        access: RW,
+        reset: 0,
+
+        fields: fieldset CrtlAcc3Fields {
+            size-bytes: 2,
+
+            field dyn_xyz3 2:0 -> u8 as try RateDynamicRange,
+        }
+    },
+
+    register CtrlRateFlag1 {
+        address: 0x2B,
+        access: RW,
+        reset: 0,
+
+        fields: fieldset CtrlFlagFields {
+            size-bytes: 2,
+
+            field z_sat_ctrl 14:10,
+            field y_sat_ctrl 9:5,
+            field x_sat_ctrl 4:0,
+        }
+    },
+
+    register CtrlRateFlag2 {
+        address: 0x2C,
+        access: RW,
+        reset: 0,
+        
+        fields: CtrlFlagFields
+    },
+
+    register CtrlAccFlag1 {
+        address: 0x2D,
+        access: RW,
+        reset: 0,
+        
+        fields: CtrlFlagFields
+    },
+
+    register CtrlAccFlag2 {
+        address: 0x2E,
+        access: RW,
+        reset: 0,
+        
+        fields: CtrlFlagFields
+    },
+
+    /// dry_sync pin polarity
+    enum Polarity {
+        /// Dry will assert high when active and Sync will trigger on a high level
+        active_high: default _,
+        /// Dry will assert low when active and Sync will trigger on a low level
+        active_low: _,
+    },
+
+    /// Spi speed mode
+    enum HiSpd {
+        /// Default, matches SafeSpi spec
+        mhz10: default _,
+        /// Alternate, maximum speed
+        mhz25: _,
+    },
+            
+    /// Spi interface voltage
+    enum SpiSupply {
+        v33: default _,
+        v18: _,
+    },
+
+    register CtrlUserIf {
+        address: 0x33,
+        access: RW,
+        reset: 0b0010000000001100,
+        
+        fields: fieldset CtrlUserIfFields {
+            size-bytes: 2,
+
+            field spi_supply 14 -> u8 as SpiSupply,
+            field ftree_tdel 13:12 -> u8 as enum FTreeTDel {
+                ms0_078: _,
+                ms0_625: _,
+                ms2_5: default _,
+                ms5: _,
+            },
+            field sync_pol 11 -> u8 as Polarity,
+            field sync_toc_th 10:9 -> u8 as enum SyncTocTh {
+                mclk_x_2pow15: default _,
+                mclk_x_2pow16: _,
+                mclk_x_2pow17: _,
+                mclk_x_2pow18: _,
+            },
+            field sync_dec_en 8 -> bool,
+            field sync_intp_en 7 -> bool,
+            field dry_pol 6 -> u8 as Polarity,
+            field dry_drv_en 5 -> bool,
+            field spi_pull_weak 4 -> u8 as enum SpiPullWeak {
+                strong: default _,
+                weak: _,
+            },
+            field dry_hi_speed 1 -> u8 as HiSpd,
+            field miso_hi_speed 0 -> u8 as HiSpd,
+        }
+    },
+
+    register CtrlSt {
+        address: 0x34,
+        access: RW,
+        reset: 0,
+        
+        fields: fieldset CtrlStFields {
+            size-bytes: 2,
+
+            field rate_stc_ctrl_z 11 -> bool,
+            field rate_stc_ctrl_y 10 -> bool,
+            field rate_stc_ctrl_x 9 -> bool,
+            field acc_z_stc_mask1 8 -> bool,
+            field acc_y_stc_mask1 7 -> bool,
+            field acc_x_stc_mask1 6 -> bool,
+            field acc_z_stc_mask2 5 -> bool,
+            field acc_y_stc_mask2 4 -> bool,
+            field acc_x_stc_mask2 3 -> bool,
+            field acc_sts_ctrl 2 -> bool,
+            field acc_sts_req 0 -> bool,
+        }
+    },
+
+    register CtrlMode {
+        address: 0x35,
+        access: RW,
+        reset: 0,
+        
+        fields: fieldset CtrlModeFields {
+            size-bytes: 2,
+
+            field eoi_ctrl 1 -> bool,
+            field en_sensor 0 -> bool,
+        }
+    },
+
+    register CtrlReset {
+        address: 0x36,
+        access: RW,
+        reset: 0x000A,
+        
+        fields: fieldset CtrlResetFields {
+            size-bytes: 2,
+
+            field softreset_ctrl 3:0,
+        }
+    },
+
+    register SysTest {
+        address: 0x37,
+        access: RW,
+        reset: 0,
+        
+        fields: fieldset TestFields {
+            size-bytes: 2,
+
+            field data 15:0
+        }
+    },
+
+    register AsicId {
+        address: 0x3B,
+        access: RO,
+        reset: 0,
+        
+        fields: fieldset AsicIdFields {
+            size-bytes: 2,
+
+            field asic_type 11:8,
+            field asic_rev 7:4,
+            field asic_rev_minor 3:0,
+        }
+    },
+
+    register CompId {
+        address: 0x3C,
+        access: RO,
+        reset: 0,
+        
+        fields: fieldset Data16 {
+            size-bytes: 2,
+
+            field data 15:0 -> u16,
+        }
+    },
+
+    register SnId1 {
+        address: 0x3D,
+        access: RO,
+        reset: 0,
+        
+        fields: fieldset SnId1Fields {
+            size-bytes: 2,
+
+            field f 3:0
+        }
+    },
+
+    register SnId2 {
+        address: 0x3E,
+        access: RO,
+        reset: 0,
+        
+        fields: fieldset SnId2Fields {
+            size-bytes: 2,
+
+            field day_year 15:0
+        }
+    },
+
+    register SnId3 {
+        address: 0x3F,
+        access: RO,
+        reset: 0,
+        
+        fields: fieldset SnId3Fields {
+            size-bytes: 2,
+
+            field serial 15:0
+        }
+    },
+}

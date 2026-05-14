@@ -1,0 +1,43 @@
+[package]
+name = "sch16t-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embassy-sync = { version = "0.8", features = ["defmt"] }
+embassy-executor = { version = "0.10", features = ["defmt"] }
+embassy-time = { version = "0.5.1", features = [
+  "defmt",
+  "defmt-timestamp-uptime",
+] }
+embassy-rp = { version = "0.10", features = [
+  "defmt",
+  "time-driver",
+  "critical-section-impl",
+  "executor-thread",
+  "executor-interrupt",
+  "rp235xa",
+] }
+embassy-futures = { version = "0.1" }
+embassy-embedded-hal = { version = "0.6", features = ["defmt"] }
+
+defmt = "1"
+defmt-rtt = "1"
+
+cortex-m = { version = "0.7.6", features = ["inline-asm"] }
+cortex-m-rt = "0.7.0"
+panic-probe = { version = "1", features = ["print-defmt"] }
+
+static_cell = { version = "2.1", features = ["nightly"] }
+
+embedded-hal = "1.0"
+embedded-hal-async = "1.0"
+
+sch16t-rs = { path = "../../", features = ["defmt"] }
+
+[profile.release]
+debug = 2
+lto = true
+opt-level = 's'
+codegen-units = 1
+incremental = false

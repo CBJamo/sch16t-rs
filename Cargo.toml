@@ -1,0 +1,35 @@
+[package]
+name = "sch16t-rs"
+version = "0.1.0"
+edition = "2024"
+authors = ["Caleb Jamison <caleb@cbjamo.com>"]
+description = "Async, no_std driver for the Murata SCH16T family of 6-axis IMUs."
+repository = "https://github.com/CBJamo/sch16t-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["no_std", "imu", "driver"]
+
+[dependencies]
+embedded-hal = "1"
+embedded-hal-async = "1"
+
+defmt = { version = "1", optional = true }
+log = { version = "0.4.29", optional = true }
+
+device-driver = { version = "2.0.0-alpha.1", git = "https://github.com/diondokter/device-driver.git", rev = "8c939507960bbff7f7b80a7c0eb310262cf10fc0" }
+crc = "3.4"
+heapless = "0.9"
+
+uom = { version = "0.38", optional = true, default-features = false, features = [
+  "f32",
+  "si",
+] }
+serde = { version = "1", optional = true, default-features = false, features = [
+  "derive",
+] }
+
+[features]
+default = ["defmt"]
+defmt = ["dep:defmt", "device-driver/defmt"]
+serde = ["dep:serde"]
+log = ["dep:log"]
+uom = ["dep:uom", "uom/serde"]
