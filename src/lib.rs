@@ -493,11 +493,13 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
     /// Initialize the sensor and driver with the given config.
     pub async fn init(&mut self, config: Config) -> Result<(), Error<BUS::Error>> {
         // See Figure 8 "start-up sequence"
+        // This fn is a direct implementation of that figure.
         // Power should aready be on and stable.
 
         self.reset().await?;
         debug!("Intializing SCH16T");
 
+        // Delay from figure 8
         self.delay.delay_ms(32).await;
 
         if config != Config::default() {
@@ -509,6 +511,7 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
             .write_async(|r| r.set_en_sensor(true))
             .await?;
 
+        // Delay from figure 8
         self.delay.delay_ms(215).await;
 
         let _ = self.get_full_status().await?;
@@ -521,6 +524,7 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
             })
             .await?;
 
+        // Delay from figure 8
         self.delay.delay_ms(3).await;
 
         let _ = self.get_full_status().await?;
@@ -537,9 +541,11 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
         self.config = Some(config);
         let mut read_loop_addrs = match config.sample_mode {
             SampleMode::Interpolate => {
+                // These are the interpolated rate and accel registers
                 Vec::from_slice(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06]).unwrap()
             }
             SampleMode::Decimation => {
+                // These are the decimated rate and accel registers
                 Vec::from_slice(&[0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F]).unwrap()
             }
         };
@@ -651,14 +657,14 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
                         let com = self.ll.stat_rate_com().read_async().await?;
                         let axis = self.ll.stat_rate_y().read_async().await?;
                         if !com.ok() || !axis.ok() {
-                            return Err(Error::GyroXError((com, axis)));
+                            return Err(Error::GyroYError((com, axis)));
                         }
                     }
                     if !stat.rate_z() {
                         let com = self.ll.stat_rate_com().read_async().await?;
                         let axis = self.ll.stat_rate_z().read_async().await?;
                         if !com.ok() || !axis.ok() {
-                            return Err(Error::GyroXError((com, axis)));
+                            return Err(Error::GyroZError((com, axis)));
                         }
                     }
 
@@ -671,13 +677,13 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
                     if !stat.acc_y() {
                         let axis = self.ll.stat_acc_x().read_async().await?;
                         if !axis.ok() {
-                            return Err(Error::AccXError(axis));
+                            return Err(Error::AccYError(axis));
                         }
                     }
                     if !stat.acc_z() {
                         let axis = self.ll.stat_acc_x().read_async().await?;
                         if !axis.ok() {
-                            return Err(Error::AccXError(axis));
+                            return Err(Error::AccZError(axis));
                         }
                     }
 
@@ -704,6 +710,7 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
                 };
 
             let lsb_ds = match config.rate_range {
+                // These really are the same. See DS table 63
                 RateDynamicRange::Dyn1 => 1600,
                 RateDynamicRange::Dyn2 => 1600,
                 RateDynamicRange::Dyn3 => 3200,

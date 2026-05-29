@@ -44,6 +44,7 @@ impl<BUS> Interface<BUS> {
             let next_pos = pos + 1;
             if next_pos == self.read_loop_addrs.len() {
                 if self.sticky_status != SensorStatus::Normal {
+                    // if status isn't normal, we'll want the satus register next
                     0x14
                 } else {
                     self.read_loop_addrs[0]
