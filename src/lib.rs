@@ -675,13 +675,13 @@ impl<BUS: embedded_hal_async::spi::SpiDevice, DELAY: DelayNs> Sch16t<BUS, DELAY>
                         }
                     }
                     if !stat.acc_y() {
-                        let axis = self.ll.stat_acc_x().read_async().await?;
+                        let axis = self.ll.stat_acc_y().read_async().await?;
                         if !axis.ok() {
                             return Err(Error::AccYError(axis));
                         }
                     }
                     if !stat.acc_z() {
-                        let axis = self.ll.stat_acc_x().read_async().await?;
+                        let axis = self.ll.stat_acc_z().read_async().await?;
                         if !axis.ok() {
                             return Err(Error::AccZError(axis));
                         }
