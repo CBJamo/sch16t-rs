@@ -183,6 +183,24 @@ pub enum SampleMode {
     Decimation,
 }
 
+impl core::fmt::Display for SampleMode {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for SampleMode {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Interpolate" => Ok(SampleMode::Interpolate),
+            "Decimation" => Ok(SampleMode::Decimation),
+            _ => Err("Sample mode values are Interpolate and Decimation"),
+        }
+    }
+}
+
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
 /// Select the dry_sync pin's mode.
@@ -196,6 +214,25 @@ pub enum SyncDryMode {
     Sync,
     /// Configure the SyncDry pin as a data ready output
     Dry,
+}
+
+impl core::fmt::Display for SyncDryMode {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for SyncDryMode {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Off" => Ok(SyncDryMode::Off),
+            "Sync" => Ok(SyncDryMode::Sync),
+            "Dry" => Ok(SyncDryMode::Dry),
+            _ => Err("SyncDryMode values are Off, Sync, and Dry"),
+        }
+    }
 }
 
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]

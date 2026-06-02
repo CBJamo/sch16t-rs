@@ -21,6 +21,144 @@ const CRC8_ALG: Algorithm<u8> = Algorithm {
 
 const CRC8: crc::Crc<u8> = crc::Crc::<u8>::new(&CRC8_ALG);
 
+impl core::fmt::Display for Filter {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for Filter {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Lpf0" => Ok(Filter::Lpf0),
+            "Lpf1" => Ok(Filter::Lpf1),
+            "Lpf2" => Ok(Filter::Lpf2),
+            "Lpf3" => Ok(Filter::Lpf3),
+            "Lpf4" => Ok(Filter::Lpf4),
+            "Lpf5" => Ok(Filter::Lpf5),
+            "Lpf7" => Ok(Filter::Lpf7),
+            _ => Err("Filter values are Lfp0/1/2/3/4/5/7"),
+        }
+    }
+}
+
+impl core::fmt::Display for RateDynamicRange {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for RateDynamicRange {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Dyn1" => Ok(RateDynamicRange::Dyn1),
+            "Dyn2" => Ok(RateDynamicRange::Dyn2),
+            "Dyn3" => Ok(RateDynamicRange::Dyn3),
+            "Dyn4" => Ok(RateDynamicRange::Dyn4),
+            _ => Err("Range values are Dyn1/2/3/4"),
+        }
+    }
+}
+
+impl core::fmt::Display for AccDynamicRange {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for AccDynamicRange {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Dyn1" => Ok(AccDynamicRange::Dyn1),
+            "Dyn2" => Ok(AccDynamicRange::Dyn2),
+            "Dyn3" => Ok(AccDynamicRange::Dyn3),
+            "Dyn4" => Ok(AccDynamicRange::Dyn4),
+            _ => Err("Range values are Dyn1/2/3/4"),
+        }
+    }
+}
+
+impl core::fmt::Display for DecimationRatio {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for DecimationRatio {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Dec1" => Ok(DecimationRatio::Dec1),
+            "Dec2" => Ok(DecimationRatio::Dec2),
+            "Dec3" => Ok(DecimationRatio::Dec3),
+            "Dec4" => Ok(DecimationRatio::Dec4),
+            "Dec5" => Ok(DecimationRatio::Dec5),
+            _ => Err("Decimation ratio values are Dec1/2/3/4"),
+        }
+    }
+}
+
+impl core::fmt::Display for Polarity {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for Polarity {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "ActiveLow" => Ok(Polarity::ActiveLow),
+            "ActiveHigh" => Ok(Polarity::ActiveHigh),
+            _ => Err("Polarity values are ActiveLow and ActiveHigh"),
+        }
+    }
+}
+
+impl core::fmt::Display for HiSpd {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for HiSpd {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Mhz10" => Ok(HiSpd::Mhz10),
+            "Mhz25" => Ok(HiSpd::Mhz25),
+            _ => Err("HiSpd values are Mhz10 and Mhz25"),
+        }
+    }
+}
+
+impl core::fmt::Display for SpiSupply {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for SpiSupply {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "V18" => Ok(SpiSupply::V18),
+            "V33" => Ok(SpiSupply::V33),
+            _ => Err("SpiSupply values are V18 and V33"),
+        }
+    }
+}
+
 impl FrameOut {
     pub(crate) fn compute_crc(&mut self) -> u8 {
         self.set_crc(0);
