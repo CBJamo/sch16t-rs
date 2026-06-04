@@ -128,7 +128,7 @@ pub struct RawSample {
 }
 
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 /// Main user-facing error
 pub enum Error<E> {
     /// I2c error, see internal error for details.
@@ -158,14 +158,37 @@ pub enum Error<E> {
 }
 
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
 #[allow(missing_docs)]
 /// The SCH16T is addressed pulling the TA8 and TA9 pins high or low.
 pub enum AddressPins {
+    #[default]
     Ta8LowTa9Low,
     Ta8HighTa9Low,
     Ta8LowTa9High,
     Ta8HighTa9High,
+}
+
+impl core::fmt::Display for AddressPins {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::write!(f, "{:?}", self)
+    }
+}
+
+impl TryFrom<&str> for AddressPins {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "Ta8LowTa9Low" => Ok(AddressPins::Ta8LowTa9Low),
+            "Ta8HighTa9Low" => Ok(AddressPins::Ta8HighTa9Low),
+            "Ta8LowTa9High" => Ok(AddressPins::Ta8LowTa9High),
+            "Ta8HighTa9High" => Ok(AddressPins::Ta8HighTa9High),
+            _ => Err(
+                "AddressPins values are Ta8LowTa9Low, Ta8HighTa9Low, Ta8LowTa9High, and Ta8HighTa9High",
+            ),
+        }
+    }
 }
 
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
