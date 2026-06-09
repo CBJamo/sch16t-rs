@@ -100,7 +100,7 @@ impl TryFrom<&str> for DecimationRatio {
             "Dec3" => Ok(DecimationRatio::Dec3),
             "Dec4" => Ok(DecimationRatio::Dec4),
             "Dec5" => Ok(DecimationRatio::Dec5),
-            _ => Err("Decimation ratio values are Dec1/2/3/4"),
+            _ => Err("Decimation ratio values are Dec1/2/3/4/5"),
         }
     }
 }
